@@ -25,7 +25,7 @@ module SyncFIFO_Bypass #(
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output                      o_Valid,    // valid
+    output reg                  o_Valid,    // valid
     output wire [WIDTH-1:0]     o_Data,
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
@@ -49,14 +49,16 @@ assign fifo_rden = i_Grant;     // 授权信号有效时, 读出数据
 
 // Bypass mechanism
 always @(posedge CLK) i_WrData_reg <= i_WrData;             // 用于旁路的寄存器
+
 always @(posedge CLK or posedge Reset) begin
     if (Reset) begin
         o_Valid <= 1'b0;
     end
     else begin
-        // TODO
+        // TODO: 等有完整思路了再写
     end
 end
+
 // fifo空时, 直接输出i_WrData_reg
 assign o_Data  = (i_Grant && fifo_empty) ? i_WrData_reg : fifo_rddata;   
 
