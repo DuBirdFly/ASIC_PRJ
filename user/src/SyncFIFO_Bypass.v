@@ -25,12 +25,12 @@ module SyncFIFO_Bypass #(
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output reg                  o_Valid,    // valid
+    output reg                  o_Valid,    // valid, 也是
     output wire [WIDTH-1:0]     o_Data,
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
     input                       i_Grant,
-    // 下一级模块的授权信号, 用于控制下一级i_Grant信号
+    // 下一级模块的授权信号, 用于控制下一级i_Grant信号; TODO: 没写一个字, 因为没搞懂这个信号是干嘛的
     output                      o_Grant
 );
 

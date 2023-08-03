@@ -72,7 +72,9 @@ if __name__ == "__main__":
         # Sim
         FILE_PH_VVP = f"{DIR_PH_OUT}/vvp_script.vvp"
         DIR_PH_INC = ""
-        FILE_PH_TBTOP = f"{DIR_PH_CWD}/user/sim/tb_Arb.v"
+        FILE_PH_TBTOP = f"{DIR_PH_CWD}/user/sim/tb_SyncFIFO.v"
         # DIR_PH_RTL = f"{DIR_PH_CWD}/user/src"
-        RTL_FILEPATHS = [f"{DIR_PH_CWD}/user/src/RoundRobinArbiter.v"]
-        Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, RTL_FILEPATHS).run_iverilog()
+        RTL_FILEPATHS = [f"{DIR_PH_CWD}/user/src/SyncFIFO.v"]
+        sim = Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, RTL_FILEPATHS)
+        sim.run_iverilog()
+        # sim.run_gtkwave(f"{DIR_PH_OUT}/tb_SyncFIFO.vcd")
