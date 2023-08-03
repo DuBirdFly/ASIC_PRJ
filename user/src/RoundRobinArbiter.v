@@ -6,7 +6,7 @@ module RoundRobinArbiter(
     output reg [2:0] o_grant            // 组合逻辑输出
 );
 
-    reg [3:0] priority;                 // 实质上不过是o_grant_delay1罢了
+    reg [2:0] priority;                 // 实质上不过是o_grant_delay1罢了
 
     always @(posedge clk or negedge rstn) begin
         if (!rstn) priority <= 'b001;
