@@ -1,46 +1,56 @@
+// 公平轮转仲裁器
+// 输入端口: clk, rstn, en, req_vld[2:0]
+// 输出端口: o_grant[2:0]
+
 module RoundRobinArbiter(
-    input            clk,
-    input            rstn,
-    input            en,
-    input      [2:0] req_vld,
-    output reg [2:0] o_grant            // 组合逻辑输出
+    input wire clk,
+    input wire rstn,
+    input wire en,
+    input wire [2:0] req_vld,
+    output reg [2:0] o_grant
 );
 
-    reg [2:0] priority;                 // 实质上不过是o_grant_delay1罢了
+reg [2:0] last_grant;           // 上一clk的优先级
 
-    always @(posedge clk or negedge rstn) begin
-        if (!rstn) priority <= 'b001;
-        else if (en & ( |req_vld )) priority <= o_grant;
-    end
-
-    always @(*) begin
-        o_grant = 'b000;
-        
-        if (en) begin
-            case(priority)
-            // 优先级1>2>0 
+always @(posedge clk) begin
+    if (en) begin
+        case (last_grant)
             'b001: begin
-                if      (req_vld[1]) o_grant = 'b010;
-                else if (req_vld[2]) o_grant = 'b100;
-                else if (req_vld[0]) o_grant = 'b001;
+                if      (req_vld[0]) o_grant <= 3'b001;
+                else if (req_vld[1]) o_grant <= 3'b010;
+                else if (req_vld[2]) o_grant <= 3'b100;
+                else                 o_grant <= 3'b000;
             end
-            // 优先级2>0>1
             'b010: begin
-                if      (req_vld[2]) o_grant = 'b010;
-                else if (req_vld[0]) o_grant = 'b100;
-                else if (req_vld[1]) o_grant = 'b001;
+                if      (req_vld[1]) o_grant <= 3'b010;
+                else if (req_vld[2]) o_grant <= 3'b100;
+                else if (req_vld[0]) o_grant <= 3'b001;
+                else                 o_grant <= 3'b000;
             end
-            // 优先级0>1>2
-            default: begin
-                if      (req_vld[0]) o_grant = 'b010;
-                else if (req_vld[1]) o_grant = 'b100;
-                else if (req_vld[2]) o_grant = 'b001;
+            'b100: begin
+                if      (req_vld[2]) o_grant <= 3'b100;
+                else if (req_vld[0]) o_grant <= 3'b001;
+                else if (req_vld[1]) o_grant <= 3'b010;
+                else                 o_grant <= 3'b000;
             end
-            endcase
-        end
-
+            default: o_grant <= 3'b000;
+        endcase
     end
+    else
+        o_grant <= 3'b000;
+end
 
-    
+// last_grant
+always @(posedge clk or negedge rstn) begin
+    if (!rstn) last_grant <= 'b001;
+    else if (en) begin
+        if (o_grant[0])
+            last_grant <= 'b001;
+        else if (o_grant[1])
+            last_grant <= 'b010;
+        else if (o_grant[2])
+            last_grant <= 'b100;
+    end
+end
 
 endmodule
