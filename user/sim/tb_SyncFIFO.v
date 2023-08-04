@@ -56,7 +56,7 @@ initial begin
         wrdata = i; #(PERIOD*1);
     end
     // 读空fifo
-    wren = 0; rden = 1; #(PERIOD*20);
+    wren = 0; rden = 1; #(PERIOD*1);
     $finish;
 end
 
