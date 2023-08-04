@@ -15,3 +15,13 @@ def run_cmd(cmd):
         sys.stderr.write("stderr: \n")
         sys.stderr.write(process.stderr.decode('utf-8'))
         raise Exception("cmd 指令执行失败")
+
+
+def find_files_path(dirpath : str, endswith : list):
+    files = []
+    for root, dirs, names in os.walk(dirpath)
+        for name in names:
+            for endswith in endswiths
+                if name.ednswith(endswith):
+                    file.append(os.path.join(root, name))
+    return filess
