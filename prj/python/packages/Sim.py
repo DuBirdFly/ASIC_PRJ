@@ -7,40 +7,34 @@ class Sim:
         self,
         # 路径均为绝对路径, 注意 filepath 与 dirpath 的区别
         filepath_vvp_script : str,
-        dirpath_defines : str,
+        dirpath_include : str,
         filepath_tb_top : str,
-        # dirpath_rtls : str
-        rtl_filepaths : list
+        filepaths_rtl : list
     ):
 
         self.ivg_cmd = ["iverilog"]
         self.vvp_cmd = ["vvp", filepath_vvp_script]
 
-        dirpath_vvp_script = os.path.dirname(filepath_vvp_script)
-        if os.path.exists(os.path.dirname(dirpath_vvp_script)):
-            self.ivg_cmd.extend(["-o", filepath_vvp_script])         # '-o' --> output
+        if os.path.exists(os.path.dirname(dirpath_vvp_script)) or os.path.exists(filepath_vvp_script):
+            self.ivg_cmd.extend(["-o", filepath_vvp_script])           # '-o' --> output
         else:
             raise Exception(f"ERROR: {filepath_vvp_script}所处的文件夹不存在")
 
-        if os.path.exists(dirpath_defines):
-            self.ivg_cmd.extend(["-I", dirpath_defines])                # '-I' --> includedir
+        if os.path.exists(dirpath_include):
+            self.ivg_cmd.extend(["-I", dirpath_include])                # '-I' --> includedir
         elif dirpath_defines != "":
                 raise Exception(f"ERROR: {dirpath_defines}文件夹不存在") 
 
         if os.path.exists(filepath_tb_top):
             self.ivg_cmd.append(filepath_tb_top)
         else:
-            raise Exception(f"ERROR: {filepath_tb_top}文件不存在")              
+            raise Exception(f"ERROR: {filepath_tb_top}文件不存在")
 
-        # 指定其他的rtl文件
-        # filepaths = []
-        # for root, dirnames, filenames in os.walk(dirpath_rtls):
-        #     for filename in filenames:
-        #         if filename.endswith(".v") or filename.endswith(".sv"):
-        #             filepaths.append(os.path.join(root, filename))
-
-        if rtl_filepaths: self.ivg_cmd.extend(rtl_filepaths)
-
+        if filepaths_rtl:
+            self.ivg_cmd.extend(filepaths_rtl)
+        else:
+            raise Exception(f"ERROR: {filepaths_rtl}是空文件列表")
+    
     def run_iverilog(self):
         sys.stdout.write("----------------------------------\n")
         sys.stdout.write("-------- PROCESS : Sim.py --------\n")
@@ -73,8 +67,7 @@ if __name__ == "__main__":
         FILE_PH_VVP = f"{DIR_PH_OUT}/vvp_script.vvp"
         DIR_PH_INC = ""
         FILE_PH_TBTOP = f"{DIR_PH_CWD}/user/sim/tb_SyncFIFO.v"
-        # DIR_PH_RTL = f"{DIR_PH_CWD}/user/src"
-        RTL_FILEPATHS = [f"{DIR_PH_CWD}/user/src/SyncFIFO.v"]
-        sim = Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, RTL_FILEPATHS)
+        FILES_RTL = [f"{DIR_PH_CWD}/user/src/SyncFIFO.v"]
+        sim = Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, FILES_RTL)
         sim.run_iverilog()
         # sim.run_gtkwave(f"{DIR_PH_OUT}/tb_SyncFIFO.vcd")
