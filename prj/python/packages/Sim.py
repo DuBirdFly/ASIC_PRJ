@@ -70,4 +70,4 @@ if __name__ == "__main__":
         FILES_RTL = [f"{DIR_PH_CWD}/user/src/SyncFIFO.v"]
         sim = Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, FILES_RTL)
         sim.run_iverilog()
-        # sim.run_gtkwave(f"{DIR_PH_OUT}/tb_SyncFIFO.vcd")
+        sim.run_gtkwave(f"{DIR_PH_OUT}/tb_SyncFIFO.vcd")
