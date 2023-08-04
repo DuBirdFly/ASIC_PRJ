@@ -17,11 +17,18 @@ def run_cmd(cmd):
         raise Exception("cmd 指令执行失败")
 
 
-def find_files_path(dirpath : str, endswith : list):
+def find_files_path(dirpath : str, endswiths : list):
     files = []
-    for root, dirs, names in os.walk(dirpath)
+    for root, dirs, names in os.walk(dirpath):
         for name in names:
-            for endswith in endswiths
-                if name.ednswith(endswith):
-                    file.append(os.path.join(root, name))
-    return filess
+            for endswith in endswiths:
+                if name.endswith(endswith):
+                    files.append(os.path.join(root, name))
+    return files
+
+DIR_PH_CWD = os.getcwd().replace('\\', '/')
+
+files = find_files_path(f"{DIR_PH_CWD}/user", ['.v', '.sv'])
+
+for file in files:
+    print(file)

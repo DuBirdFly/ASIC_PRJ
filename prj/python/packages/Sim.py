@@ -15,25 +15,25 @@ class Sim:
         self.ivg_cmd = ["iverilog"]
         self.vvp_cmd = ["vvp", filepath_vvp_script]
 
-        if os.path.exists(os.path.dirname(dirpath_vvp_script)) or os.path.exists(filepath_vvp_script):
+        if os.path.exists(os.path.dirname(filepath_vvp_script)) or os.path.exists(filepath_vvp_script):
             self.ivg_cmd.extend(["-o", filepath_vvp_script])           # '-o' --> output
         else:
-            raise Exception(f"ERROR: {filepath_vvp_script}所处的文件夹不存在")
+            raise Exception(f"ERROR: 文件夹不存在")
 
         if os.path.exists(dirpath_include):
             self.ivg_cmd.extend(["-I", dirpath_include])                # '-I' --> includedir
-        elif dirpath_defines != "":
-                raise Exception(f"ERROR: {dirpath_defines}文件夹不存在") 
+        elif dirpath_include != "":
+                raise Exception(f"ERROR: 文件夹不存在") 
 
         if os.path.exists(filepath_tb_top):
             self.ivg_cmd.append(filepath_tb_top)
         else:
-            raise Exception(f"ERROR: {filepath_tb_top}文件不存在")
+            raise Exception(f"ERROR: 文件不存在")
 
         if filepaths_rtl:
             self.ivg_cmd.extend(filepaths_rtl)
         else:
-            raise Exception(f"ERROR: {filepaths_rtl}是空文件列表")
+            raise Exception(f"ERROR: 是空文件列表")
     
     def run_iverilog(self):
         sys.stdout.write("----------------------------------\n")
