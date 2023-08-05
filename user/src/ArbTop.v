@@ -1,6 +1,7 @@
 module ArbTop(
-    input                clk,
-    
+    input                CLK,
+    input                ASynReset_N,
+
 );
 
 
