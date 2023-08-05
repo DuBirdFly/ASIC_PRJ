@@ -11,7 +11,7 @@ module SyncFIFO #(
     parameter WIDTH = 8
 )(
     input                           clk,
-    input                           asrst,  // asynchronous reset
+    input                           asrst,  // asynchronous reset, high active
     // FIFO WRITE
     input                           wren,   // write enable
     input           [WIDTH-1:0]     wrdata, // write data

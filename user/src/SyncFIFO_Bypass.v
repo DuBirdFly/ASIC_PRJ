@@ -20,18 +20,18 @@ module SyncFIFO_Bypass #(
     parameter   WIDTH = 64
 )(
     input                       CLK,
-    input                       Reset,      // asynchronous reset
+    input                       Reset,      // asynchronous reset, high active
 
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output wire                 o_Valid,    // 数据有效信号, assign to i_Grant
-    output wire [WIDTH-1:0]     o_Data,     // 组合逻辑
+    output wire                 o_Valid,    // 数据有效信号, assign to i_Grant_reg (i_Grant delay 1 clk)
+    output wire [WIDTH-1:0]     o_Data,
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
     input                       i_Grant,
     // 下一级模块的授权信号, 用于控制下一级i_Grant信号; 也就是仲裁器的req_vld[2:0]
-    output wire                 o_Grant     // 组合逻辑
+    output wire                 o_Grant
 );
 
 wire                    fifo_wren, fifo_rden;
