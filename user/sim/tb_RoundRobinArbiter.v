@@ -8,14 +8,14 @@ parameter SYS_CLK_FRE   = 50;               // 50MHz
 localparam PERIOD = (1000 / SYS_CLK_FRE);
 
 reg             sys_clk = 1;
-reg             sys_rst_n = 0;
+reg             sys_rst = 1;
 
 reg             en = 0;
 reg     [2:0]   req_vld = 0;
 wire    [2:0]   o_grant;
 
 always #(PERIOD/2) sys_clk = ~sys_clk;
-always #(PERIOD*2 + PERIOD/2) sys_rst_n = 1;
+always #(PERIOD*2 + PERIOD/2) sys_rst = 0;
 
 initial begin            
     $dumpfile(`FILE_PH_VCD);
@@ -38,7 +38,7 @@ end
 
 RoundRobinArbiter u_Arb(
     .clk         ( sys_clk      ),
-    .rstn        ( sys_rst_n    ),
+    .asrst       ( sys_rst      ),
     .en          ( en           ),
     .req_vld     ( req_vld      ),
     .o_grant     ( o_grant      )

@@ -4,7 +4,7 @@
 
 module RoundRobinArbiter(
     input wire clk,
-    input wire rstn,
+    input wire asrst,
     input wire en,
     input wire [2:0] req_vld,
     output reg [2:0] o_grant
@@ -37,8 +37,8 @@ always @(*) begin
 end
 
 // last_grant
-always @(posedge clk or negedge rstn) begin
-    if (!rstn) last_grant <= 'b001;
+always @(posedge clk or posedge asrst) begin
+    if (asrst) last_grant <= 'b001;
     else if (en) begin
         if (o_grant[0])
             last_grant <= 'b001;
