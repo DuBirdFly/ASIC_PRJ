@@ -30,6 +30,7 @@ wire                    i_Grant;
 
 wire  [WIDTH-1:0]       o_Data;
 wire                    o_Grant;
+wire                    o_Valid;
 
 reg                     o_Grant_reg = 0;
 reg   [2:0]             arb_grant = 3'b000;       // 当前正在给其他模块授权
@@ -94,7 +95,7 @@ SyncFIFO_Bypass #(
     .i_WrEn         ( i_WrEn    ),
     .i_WrData       ( i_WrData  ),
     .i_Grant        ( i_Grant   ),
-    .o_Valid        (           ),
+    .o_Valid        ( o_Valid   ),
     .o_Data         ( o_Data    ),
     .o_Grant        ( o_Grant   )
 );

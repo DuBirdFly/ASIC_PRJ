@@ -25,7 +25,7 @@ module SyncFIFO_Bypass #(
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output reg                  o_Valid,    // 数据有效信号, assign to i_Grant
+    output wire                 o_Valid,    // 数据有效信号, assign to i_Grant
     output wire [WIDTH-1:0]     o_Data,     // 组合逻辑
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
@@ -48,7 +48,7 @@ always @(posedge CLK) begin
 end
 
 // 只要授权信号有效, 那么下一拍的数据必然是有效数据
-assign o_Valid = i_Grant;
+assign o_Valid = i_Grant_reg;
 
 // BUG: 当i_Grant不给授权, i_WrEn又一直要写, 最后把fifo写爆了的话我可不管
 // 当 i_WrEn = 1 时, 检定是需要"写入fifo"还是"旁路输出":
