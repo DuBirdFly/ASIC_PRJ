@@ -25,7 +25,7 @@ module SyncFIFO_Bypass #(
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output reg                  o_Valid,    // TODO: 不知道干嘛的信号
+    output reg                  o_Valid,    // 数据有效信号, assign to i_Grant
     output wire [WIDTH-1:0]     o_Data,     // 组合逻辑
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
@@ -41,6 +41,15 @@ wire  [WIDTH-1:0]       fifo_wrdata, fifo_rddata;
 reg   [WIDTH-1:0]       i_WrData_reg;       // 用于旁路的寄存器
 reg                     i_Grant_reg;        // 用于旁路的寄存器
 
+// 用于旁路的寄存器, DFF
+always @(posedge CLK) begin
+    i_WrData_reg <= i_WrData;
+    i_Grant_reg  <= i_Grant;
+end
+
+// 只要授权信号有效, 那么下一拍的数据必然是有效数据
+assign o_Valid = i_Grant;
+
 // BUG: 当i_Grant不给授权, i_WrEn又一直要写, 最后把fifo写爆了的话我可不管
 // 当 i_WrEn = 1 时, 检定是需要"写入fifo"还是"旁路输出":
 //      当"fifo是空的"且"有授权信号", 此时i_WrEn应该走"旁路输出", 所以此时fifo_wren = 0
@@ -52,17 +61,12 @@ assign fifo_wrdata = i_WrData;
 // 授权信号有效时读出数据.  若fifo_empty, 再读还是empty, 也就不需要 assign fifo_rden = empty ? 0 : i_Grant;
 assign fifo_rden = i_Grant;
 
-// 用于旁路的寄存器, DFF
-always @(posedge CLK) begin
-    i_WrData_reg <= i_WrData;
-    i_Grant_reg  <= i_Grant;
-end
-
 // o_Grant信号是控制下一级i_Grant信号的信号, 也就是仲裁器 req_vld[2:0] 的其中一位
 // 1. 当fifo不empty, 则o_Grant = 1
 // 2. 当fifo_empty, 此时只要有i_WrEn, 就组合逻辑 o_Grant = 1
 //    注:如果 i_Grant 暂时未响应, 则数据写入fifo, 下一拍fifo就不再empty, 则继续输出o_Grant = 1直至fifo_empty
 assign o_Grant = fifo_empty ? i_WrEn : 1;
+
 // fifo空时, 直接输出i_WrData_reg
 assign o_Data  = (i_Grant_reg && fifo_empty) ? i_WrData_reg : fifo_rddata;
 
