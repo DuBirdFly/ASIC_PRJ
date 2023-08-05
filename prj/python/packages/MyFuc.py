@@ -25,10 +25,3 @@ def find_files_path(dirpath : str, endswiths : list):
                 if name.endswith(endswith):
                     files.append(os.path.join(root, name))
     return files
-
-DIR_PH_CWD = os.getcwd().replace('\\', '/')
-
-files = find_files_path(f"{DIR_PH_CWD}/user", ['.v', '.sv'])
-
-for file in files:
-    print(file)

@@ -1,6 +1,6 @@
 `timescale 1ns / 1ns
 
-`define FILE_PH_VCD "prj/iverilog/tb_Arb.vcd"
+`define FILE_PH_VCD "prj/iverilog/tb_RoundRobinArbiter.vcd"
 
 module tb_Arb();
 

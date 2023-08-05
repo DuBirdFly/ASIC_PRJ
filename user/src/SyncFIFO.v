@@ -5,9 +5,6 @@
 // 说明: 前缀的WR/wr表示write, RD/rd表示read
 
 // Verilog使用Latch阵列实现一个读写宽度一致的同步FIFO, 使用计数器法
-// 参数: DEPTH, WIDTH
-// 输入: clk, asrst, wren, wrdata, rden
-// 输出: full, rddata, empty
 
 module SyncFIFO #(
     parameter DEPTH = 192,
@@ -18,11 +15,11 @@ module SyncFIFO #(
     // FIFO WRITE
     input                           wren,   // write enable
     input           [WIDTH-1:0]     wrdata, // write data
-    output   wire                   full,
+    output   wire                   full,   // 在wren有效的最后一个数据的"下一拍"拉高
     // FIFO READ
     input                           rden,   // read enable
     output   reg    [WIDTH-1:0]     rddata, // read data
-    output   wire                   empty
+    output   wire                   empty   // 在rden有效的最后一个数据的"当前拍"拉高
 );
 
 localparam ADDR_WIDTH = $clog2(DEPTH);      // Verilog-2005 添加了clog函数

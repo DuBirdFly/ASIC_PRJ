@@ -1,5 +1,5 @@
 import subprocess, sys, os
-from MyFuc import run_cmd
+from . MyFuc import run_cmd
 
 class Sim:
 
@@ -23,7 +23,7 @@ class Sim:
         if os.path.exists(dirpath_include):
             self.ivg_cmd.extend(["-I", dirpath_include])                # '-I' --> includedir
         elif dirpath_include != "":
-                raise Exception(f"ERROR: 文件夹不存在") 
+            raise Exception(f"ERROR: 文件夹不存在") 
 
         if os.path.exists(filepath_tb_top):
             self.ivg_cmd.append(filepath_tb_top)
@@ -60,14 +60,20 @@ if __name__ == "__main__":
     if len(sys.argv) == 5:  # sys.argv[0] 是本文件的路径
         Sim(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]).run()
     else:
-        # raise Exception("Sim.py: 参数数量错误\n")
+        # 环境路径
         DIR_PH_CWD = os.getcwd().replace('\\', '/')
         DIR_PH_OUT = f"{DIR_PH_CWD}/prj/iverilog"
+        # 独特名字
+        NAME = "SyncFIFO_Bypass"
+        TB_NAME = f"tb_{NAME}"
         # Sim
         FILE_PH_VVP = f"{DIR_PH_OUT}/vvp_script.vvp"
         DIR_PH_INC = ""
-        FILE_PH_TBTOP = f"{DIR_PH_CWD}/user/sim/tb_SyncFIFO.v"
-        FILES_RTL = [f"{DIR_PH_CWD}/user/src/SyncFIFO.v"]
+        FILE_PH_TBTOP = f"{DIR_PH_CWD}/user/sim/{TB_NAME}.v"
+        FILES_RTL = [f"{DIR_PH_CWD}/user/src/{NAME}.v"]
+        FILES_RTL.append(f"{DIR_PH_CWD}/user/src/SyncFIFO.v")
+
+        # run sim
         sim = Sim(FILE_PH_VVP, DIR_PH_INC, FILE_PH_TBTOP, FILES_RTL)
         sim.run_iverilog()
-        sim.run_gtkwave(f"{DIR_PH_OUT}/tb_SyncFIFO.vcd")
+        sim.run_gtkwave(f"{DIR_PH_OUT}/{TB_NAME}.vcd")

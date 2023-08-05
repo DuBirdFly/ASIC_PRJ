@@ -16,8 +16,8 @@
 // 先姑且认为fifo不empty时, wren与rden有效且保持先入先出顺序
 
 module SyncFIFO_Bypass #(
-    parameter DEPTH = 8,
-    parameter WIDTH = 64
+    parameter   DEPTH = 8,
+    parameter   WIDTH = 64
 )(
     input                       CLK,
     input                       Reset,      // asynchronous reset
@@ -25,52 +25,56 @@ module SyncFIFO_Bypass #(
     input                       i_WrEn,     // write enable
     input       [WIDTH-1:0]     i_WrData,   // write data
 
-    output reg                  o_Valid,    // valid, 也是
-    output wire [WIDTH-1:0]     o_Data,
+    output reg                  o_Valid,    // TODO: 不知道干嘛的信号
+    output wire [WIDTH-1:0]     o_Data,     // 组合逻辑
 
     // i_Grant = 1: 输出信号在"下一拍!"可变; i_Grant = 0: 输出信号(o_Valid, o_Data)不允许改变
     input                       i_Grant,
-    // 下一级模块的授权信号, 用于控制下一级i_Grant信号; TODO: 没写一个字, 因为没搞懂这个信号是干嘛的
-    output                      o_Grant
+    // 下一级模块的授权信号, 用于控制下一级i_Grant信号; 也就是仲裁器的req_vld[2:0]
+    output wire                 o_Grant     // 组合逻辑
 );
 
 wire                    fifo_wren, fifo_rden;
-wire                    fifo_full, fifo_empty;
+wire                    fifo_empty;
 wire  [WIDTH-1:0]       fifo_wrdata, fifo_rddata;
 
 reg   [WIDTH-1:0]       i_WrData_reg;       // 用于旁路的寄存器
+reg                     i_Grant_reg;        // 用于旁路的寄存器
 
-assign fifo_wren = i_WrEn;      // 当i_Grant不给授权, i_WrEn又一直要写, 最后把fifo写爆了的话我可不管
-assign fifo_wrdata = i_WrData;  // 写入数据
-assign fifo_rden = i_Grant;     // 授权信号有效时, 读出数据
+// BUG: 当i_Grant不给授权, i_WrEn又一直要写, 最后把fifo写爆了的话我可不管
+// 当 i_WrEn = 1 时, 检定是需要"写入fifo"还是"旁路输出":
+//      当"fifo是空的"且"有授权信号", 此时i_WrEn应该走"旁路输出", 所以此时fifo_wren = 0
+assign fifo_wren = (i_WrEn && i_Grant && fifo_empty) ? 0 : i_WrEn;
 
-// o_Grant信号的生成: 
+// 写入数据
+assign fifo_wrdata = i_WrData;
 
+// 授权信号有效时读出数据.  若fifo_empty, 再读还是empty, 也就不需要 assign fifo_rden = empty ? 0 : i_Grant;
+assign fifo_rden = i_Grant;
 
-// Bypass mechanism
-always @(posedge CLK) i_WrData_reg <= i_WrData;             // 用于旁路的寄存器
-
-always @(posedge CLK or posedge Reset) begin
-    if (Reset) begin
-        o_Valid <= 1'b0;
-    end
-    else begin
-        // TODO: 等有完整思路了再写
-    end
+// 用于旁路的寄存器, DFF
+always @(posedge CLK) begin
+    i_WrData_reg <= i_WrData;
+    i_Grant_reg  <= i_Grant;
 end
 
+// o_Grant信号是控制下一级i_Grant信号的信号, 也就是仲裁器 req_vld[2:0] 的其中一位
+// 1. 当fifo不empty, 则o_Grant = 1
+// 2. 当fifo_empty, 此时只要有i_WrEn, 就组合逻辑 o_Grant = 1
+//    注:如果 i_Grant 暂时未响应, 则数据写入fifo, 下一拍fifo就不再empty, 则继续输出o_Grant = 1直至fifo_empty
+assign o_Grant = fifo_empty ? i_WrEn : 1;
 // fifo空时, 直接输出i_WrData_reg
-assign o_Data  = (i_Grant && fifo_empty) ? i_WrData_reg : fifo_rddata;   
+assign o_Data  = (i_Grant_reg && fifo_empty) ? i_WrData_reg : fifo_rddata;
 
 SyncFIFO #(
     .DEPTH      ( DEPTH         ),
     .WIDTH      ( WIDTH         )
 )u_SyncFIFO(
-    .clk        ( clk           ),
+    .clk        ( CLK           ),
     .asrst      ( Reset         ),
     .wren       ( fifo_wren     ),
     .wrdata     ( fifo_wrdata   ),
-    .full       ( fifo_full     ),
+    .full       (               ),
     .rden       ( fifo_rden     ),
     .rddata     ( fifo_rddata   ),
     .empty      ( fifo_empty    )
