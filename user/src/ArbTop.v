@@ -76,7 +76,9 @@ SyncFIFO_Bypass #(
 );
 
 // TODO: Pass通路C
-PassC u_PassC (
+PassC #(
+    .WIDTH      ( WIDTH         )
+)u_PassC (
     .CLK        ( CLK           ),
     .Reset      ( SynReset_N    ),
     .i_Grant    ( arb_grant[2]  ),
