@@ -4,8 +4,8 @@
 
 module tb_SyncFIFO_Bypass();
 
-// commem definition
-parameter CLK_FRE   = 100;               // 50MHz
+// commem definition-----------------------------------------
+parameter CLK_FRE   = 100;               // 100MHz
 localparam PERIOD = (1000 / CLK_FRE);
 
 reg                     clk = 1;
@@ -19,7 +19,7 @@ initial begin
     $dumpvars(0, tb_SyncFIFO_Bypass);
 end
 
-// unique definition
+// unique definition------------------------------------------
 
 localparam              DEPTH = 8;
 localparam              WIDTH = 8;

@@ -4,15 +4,12 @@
 
 module tb_Arb();
 
-parameter SYS_CLK_FRE   = 50;               // 50MHz
+// commem definition-----------------------------------------
+parameter SYS_CLK_FRE = 100;               // 100MHz
 localparam PERIOD = (1000 / SYS_CLK_FRE);
 
 reg             sys_clk = 1;
 reg             sys_rst = 1;
-
-reg             en = 0;
-reg     [2:0]   req_vld = 0;
-wire    [2:0]   o_grant;
 
 always #(PERIOD/2) sys_clk = ~sys_clk;
 always #(PERIOD*2 + PERIOD/2) sys_rst = 0;
@@ -21,6 +18,11 @@ initial begin
     $dumpfile(`FILE_PH_VCD);
     $dumpvars(0, tb_Arb);
 end
+
+// unique definition------------------------------------------
+reg             en = 0;
+reg     [2:0]   req_vld = 0;
+wire    [2:0]   o_grant;
 
 initial begin
     #1;

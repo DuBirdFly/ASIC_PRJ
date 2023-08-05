@@ -4,11 +4,9 @@
 
 module tb_SyncFIFO();
 
-parameter SYS_CLK_FRE   = 100;               // 50MHz
-localparam PERIOD = (1000 / SYS_CLK_FRE);
-
-localparam DEPTH = 10;
-localparam WIDTH = 4;
+// commem definition-----------------------------------------
+parameter CLK_FRE   = 100;               // 100MHz
+localparam PERIOD = (1000 / CLK_FRE);
 
 reg                 sys_clk = 1;
 reg                 sys_rst_n = 0;
@@ -29,6 +27,10 @@ initial begin
     $dumpfile(`FILE_PH_VCD);
     $dumpvars(0, tb_SyncFIFO);
 end
+
+// unique definition------------------------------------------
+localparam DEPTH = 10;
+localparam WIDTH = 4;
 
 initial begin
     #1;
