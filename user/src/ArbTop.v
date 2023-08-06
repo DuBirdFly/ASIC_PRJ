@@ -52,7 +52,7 @@ SyncFIFO_Bypass #(
 ) u_PassA (
     .CLK        ( CLK           ),
     .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[0]  ),
+    .i_Grant    ( arb_grant[0] & i_DataGrant_D ),
     .i_WrEn     ( i_DataValid_A ),
     .i_WrData   ( i_DataIn_A    ),
     .o_Grant    ( arb_req[0]    ),
@@ -67,7 +67,7 @@ SyncFIFO_Bypass #(
 ) u_PassB (
     .CLK        ( CLK           ),
     .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[1]  ),
+    .i_Grant    ( arb_grant[1] & i_DataGrant_D ),
     .i_WrEn     ( i_DataValid_B ),
     .i_WrData   ( i_DataIn_B    ),
     .o_Grant    ( arb_req[1]    ),
@@ -81,7 +81,7 @@ PassC #(
 )u_PassC (
     .CLK        ( CLK           ),
     .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[2]  ),
+    .i_Grant    ( arb_grant[2] & i_DataGrant_D ),
     .i_WrEn     ( i_DataValid_C ),
     .i_WrData   ( i_DataIn_C    ),
     .o_Grant    ( arb_req[2]    ),
