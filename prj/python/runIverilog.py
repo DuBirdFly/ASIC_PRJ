@@ -6,7 +6,7 @@ from packages.MyFuc import find_files_path
 DIR_PH_CWD = os.getcwd().replace('\\', '/')
 DIR_PH_OUT = f"{DIR_PH_CWD}/prj/iverilog"
 # 独特名字
-NAME = "ArbTop"
+NAME = "RoundRobinArbiter"
 TB_NAME = f"tb_{NAME}"
 # Sim
 FILE_PH_VVP = f"{DIR_PH_OUT}/vvp_script.vvp"

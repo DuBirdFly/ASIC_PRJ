@@ -20,7 +20,7 @@ wire  [2:0]         arb_req, arb_grant;
 wire                PassA_DataVld, PassB_DataVld, PassC_DataVld;
 wire  [WIDTH-1:0]   PassA_Data,    PassB_Data,    PassC_Data;
 
-assign {o_DataGrant_A, o_DataGrant_B, o_DataGrant_C} = arb_grant;
+assign {o_DataGrant_C, o_DataGrant_B, o_DataGrant_A} = arb_grant;
 
 assign o_DataValid_D = (PassA_DataVld || PassB_DataVld || PassC_DataVld);
 
@@ -75,7 +75,7 @@ SyncFIFO_Bypass #(
     .o_Data     ( PassB_Data    )
 );
 
-// TODO: Pass通路C
+// BUG: 当PassA和PassB都有arb_req时, PassC会有数据丢失
 PassC #(
     .WIDTH      ( WIDTH         )
 )u_PassC (

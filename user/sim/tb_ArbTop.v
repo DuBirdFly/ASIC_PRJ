@@ -62,39 +62,36 @@ initial begin
     i_DataGrant_D = 0; #(PERIOD*4);
     // 三个通道同时有效(4个clk), 但是给i_DataGrant_D
     // 此时仲裁轮询输出, 需要花费 8 ~ 12 个clk
+    // BUG: 因为没有FIFO, 所以PassC的数据会被丢弃一部分
     i_DataGrant_D = 1;
     i_DataValid_A = 1; i_DataValid_B = 1; i_DataValid_C = 1;
     for (i = 4; i < 8; i = i + 1) begin
         i_DataIn_A = i*3; i_DataIn_B = i*3+1; i_DataIn_C = i*3+2; #(PERIOD*1);
     end
     // 等待把FIFO里的数读完
-    i_DataValid_A = 0; i_DataValid_B = 0; i_DataValid_C = 0; #(PERIOD*13);
+    i_DataValid_A = 0; i_DataValid_B = 0; i_DataValid_C = 0; #(PERIOD*9);
     i_DataGrant_D = 0; #(PERIOD*3);
-    // 构建接口缓存满的情况
+    // 构建接口缓存满之后还想存入数据的情况
+    // FIFO缓存满的情况如果还想写入数据, 则写入FIFO的数据会被丢弃
     i_DataValid_A = 1; i_DataValid_B = 1; i_DataValid_C = 1;
-    for (i = 8; i < 16; i = i + 1) begin
+    for (i = 8; i < 20; i = i + 1) begin
         i_DataIn_A = i*3; i_DataIn_B = i*3+1; i_DataIn_C = i*3+2; #(PERIOD*1);
     end
-    // 缓存满的情况如果还想写入数据, 则写入的数据会被丢弃
-    for (i = 16; i < 20; i = i + 1) begin
-        i_DataIn_A = i*3; i_DataIn_B = i*3+1; i_DataIn_C = i*3+2; #(PERIOD*1);
-    end
-    // 轮空wait
+    // 轮空 wait
     i_DataValid_A = 0; i_DataValid_B = 0; i_DataValid_C = 0; #(PERIOD*4);
-    // 读出所有数据, 发现FIFO满的情况下还写入的话会新数据被丢弃
+    // 读出所有数据, 发现 FIFO 满的情况下还写入的话新数据会被丢弃
     i_DataGrant_D = 1; #(PERIOD*20);
-    // 三个通道同时有效(4个clk), 且i_DataGrant_D, 且优先授权给PassC的情况
-    // 此时可以达到最大时间 12 个clk
-    i_DataGrant_D = 1;
-    i_DataValid_A = 1; i_DataValid_B = 1; i_DataValid_C = 1;
+    // 轮空 wait
+    i_DataGrant_D = 0; #(PERIOD*4);
+    // FIFO_A为空, 如果有数据进入且有授权, 则应该走FIFO旁路输出
+    // 以PassA为例:
+    i_DataGrant_D = 1; i_DataValid_A = 1;
     for (i = 20; i < 24; i = i + 1) begin
-        i_DataIn_A = i*3; i_DataIn_B = i*3+1; i_DataIn_C = i*3+2; #(PERIOD*1);
+        i_DataIn_A = i*3; #(PERIOD*1);
     end
-    // 等待把FIFO里的数读完
-    i_DataValid_A = 0; i_DataValid_B = 0; i_DataValid_C = 0; #(PERIOD*15);
-    i_DataGrant_D = 0; #(PERIOD*3);
-
-
+    i_DataGrant_D = 0; i_DataValid_A = 0;
+    // 轮空 wait
+    #(PERIOD*20);
     $finish;
 end
 

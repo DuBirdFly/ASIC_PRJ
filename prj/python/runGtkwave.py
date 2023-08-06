@@ -5,7 +5,7 @@ from packages.Sim import Sim
 DIR_PH_CWD = os.getcwd().replace('\\', '/')
 DIR_PH_OUT = f"{DIR_PH_CWD}/prj/iverilog"
 # 独特名字
-NAME = "ArbTop"
+NAME = "RoundRobinArbiter"
 TB_NAME = f"tb_{NAME}"
 
 Sim.run_gtkwave(f"{DIR_PH_OUT}/{TB_NAME}.vcd")
