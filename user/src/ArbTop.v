@@ -39,8 +39,8 @@ RstGen u_RstGen(
 // 仲裁器
 RoundRobinArbiter u_RoundRobinArbiter(
     .clk        ( CLK           ),
-    .asrst      ( SynReset_N    ),
-    .en         ( 1'b1          ),
+    .asrst      ( ~SynReset_N   ),
+    .en         ( i_DataGrant_D ),
     .req_vld    ( arb_req       ),
     .o_grant    ( arb_grant     )
 );
@@ -51,8 +51,8 @@ SyncFIFO_Bypass #(
     .WIDTH      ( WIDTH         )
 ) u_PassA (
     .CLK        ( CLK           ),
-    .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[0] & i_DataGrant_D ),
+    .Reset      ( ~SynReset_N   ),
+    .i_Grant    ( arb_grant[0]  ),
     .i_WrEn     ( i_DataValid_A ),
     .i_WrData   ( i_DataIn_A    ),
     .o_Grant    ( arb_req[0]    ),
@@ -66,8 +66,8 @@ SyncFIFO_Bypass #(
     .WIDTH      ( WIDTH         )
 ) u_PassB (
     .CLK        ( CLK           ),
-    .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[1] & i_DataGrant_D ),
+    .Reset      ( ~SynReset_N   ),
+    .i_Grant    ( arb_grant[1]  ),
     .i_WrEn     ( i_DataValid_B ),
     .i_WrData   ( i_DataIn_B    ),
     .o_Grant    ( arb_req[1]    ),
@@ -80,8 +80,8 @@ PassC #(
     .WIDTH      ( WIDTH         )
 )u_PassC (
     .CLK        ( CLK           ),
-    .Reset      ( SynReset_N    ),
-    .i_Grant    ( arb_grant[2] & i_DataGrant_D ),
+    .Reset      ( ~SynReset_N   ),
+    .i_Grant    ( arb_grant[2]  ),
     .i_WrEn     ( i_DataValid_C ),
     .i_WrData   ( i_DataIn_C    ),
     .o_Grant    ( arb_req[2]    ),

@@ -4,7 +4,7 @@
 
 module RoundRobinArbiter(
     input wire clk,
-    input wire asrst,
+    input wire asrst,           // asynchronous reset, high active
     input wire en,
     input wire [2:0] req_vld,
     output reg [2:0] o_grant
@@ -13,27 +13,30 @@ module RoundRobinArbiter(
 reg [2:0] last_grant;           // 上一clk的优先级
 
 always @(*) begin
-    case (last_grant)
-        'b001: begin
-            if      (req_vld[0]) o_grant <= 3'b001;
-            else if (req_vld[1]) o_grant <= 3'b010;
-            else if (req_vld[2]) o_grant <= 3'b100;
-            else                 o_grant <= 3'b000;
-        end
-        'b010: begin
-            if      (req_vld[1]) o_grant <= 3'b010;
-            else if (req_vld[2]) o_grant <= 3'b100;
-            else if (req_vld[0]) o_grant <= 3'b001;
-            else                 o_grant <= 3'b000;
-        end
-        'b100: begin
-            if      (req_vld[2]) o_grant <= 3'b100;
-            else if (req_vld[0]) o_grant <= 3'b001;
-            else if (req_vld[1]) o_grant <= 3'b010;
-            else                 o_grant <= 3'b000;
-        end
-        default: o_grant <= 3'b000;
-    endcase
+    if (en)
+        case (last_grant)
+            'b001: begin
+                if      (req_vld[0]) o_grant <= 3'b001;
+                else if (req_vld[1]) o_grant <= 3'b010;
+                else if (req_vld[2]) o_grant <= 3'b100;
+                else                 o_grant <= 3'b000;
+            end
+            'b010: begin
+                if      (req_vld[1]) o_grant <= 3'b010;
+                else if (req_vld[2]) o_grant <= 3'b100;
+                else if (req_vld[0]) o_grant <= 3'b001;
+                else                 o_grant <= 3'b000;
+            end
+            'b100: begin
+                if      (req_vld[2]) o_grant <= 3'b100;
+                else if (req_vld[0]) o_grant <= 3'b001;
+                else if (req_vld[1]) o_grant <= 3'b010;
+                else                 o_grant <= 3'b000;
+            end
+            default: o_grant <= 3'b000;
+        endcase
+    else
+        o_grant <= 3'b000;
 end
 
 // last_grant
