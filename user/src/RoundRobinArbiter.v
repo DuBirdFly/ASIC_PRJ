@@ -16,22 +16,22 @@ always @(*) begin
     if (en)
         case (last_grant)
             'b001: begin
-                if      (req_vld[1]) o_grant <= 3'b010;
-                else if (req_vld[2]) o_grant <= 3'b100;
-                else if (req_vld[0]) o_grant <= 3'b001;
-                else                 o_grant <= 3'b000;
+                if      (req_vld[1]) o_grant = 3'b010;
+                else if (req_vld[2]) o_grant = 3'b100;
+                else if (req_vld[0]) o_grant = 3'b001;
+                else                 o_grant = 3'b000;
             end
             'b010: begin
-                if      (req_vld[2]) o_grant <= 3'b100;
-                else if (req_vld[0]) o_grant <= 3'b001;
-                else if (req_vld[1]) o_grant <= 3'b010;
-                else                 o_grant <= 3'b000;
+                if      (req_vld[2]) o_grant = 3'b100;
+                else if (req_vld[0]) o_grant = 3'b001;
+                else if (req_vld[1]) o_grant = 3'b010;
+                else                 o_grant = 3'b000;
             end
             'b100: begin
-                if      (req_vld[0]) o_grant <= 3'b001;
-                else if (req_vld[1]) o_grant <= 3'b010;
-                else if (req_vld[2]) o_grant <= 3'b100;
-                else                 o_grant <= 3'b000;
+                if      (req_vld[0]) o_grant = 3'b001;
+                else if (req_vld[1]) o_grant = 3'b010;
+                else if (req_vld[2]) o_grant = 3'b100;
+                else                 o_grant = 3'b000;
             end
             default: o_grant <= 3'b000;
         endcase
