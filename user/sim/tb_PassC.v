@@ -32,7 +32,6 @@ wire  [WIDTH-1:0]       o_Data;
 wire                    o_Grant;
 wire                    o_Valid;
 
-reg                     o_Grant_reg = 0;
 reg   [2:0]             arb_grant = 3'b000;       // 当前正在给其他模块授权
 
 assign i_Grant = (arb_grant[0] && o_Grant) ? 1 : 0;
